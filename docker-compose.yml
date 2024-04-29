@@ -11,6 +11,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - reverse-proxy-net
+  # redirect:
+  #   image: morbz/docker-web-redirect
+  #   restart: always
+  #   expose:
+  #     - 80
+  #   labels:
+  #     - traefik.http.routers.main-redirect.rule=Host(`10.10.10.1`)
+  #     - traefik.http.services.main-redirect-service.loadbalancer.server.port=80
+  #     - traefik.docker.network=local-reverse-proxy-net
+  #   environment:
+  #     - REDIRECT_TARGET=mydomain.net
+  #   networks:
+  #     - reverse-proxy-net
 networks:
   reverse-proxy-net:
     name: "local-reverse-proxy-net"
