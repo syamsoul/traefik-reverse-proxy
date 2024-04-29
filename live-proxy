@@ -12,7 +12,7 @@ DOCKER_COMPOSE_CMD="sudo docker compose"
 LIVE_CMD="./live-proxy"
 
 if [ "$COMMAND" = "up" ]; then
-    $DOCKER_COMPOSE_CMD up -d --force-recreate
+    $DOCKER_COMPOSE_CMD up -d
 elif [ "$COMMAND" = "down" ]; then
     $DOCKER_COMPOSE_CMD down
 elif [ "$COMMAND" = "restart" ]; then
