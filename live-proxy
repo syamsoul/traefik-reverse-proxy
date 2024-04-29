@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+pushd ${0%/*}
+
+COMMAND=$1
+shift
+
+DOCKER_COMPOSE_CMD="sudo docker compose"
+
+LIVE_CMD="./live-proxy"
+
+if [ "$COMMAND" = "up" ]; then
+    $DOCKER_COMPOSE_CMD up -d --force-recreate
+elif [ "$COMMAND" = "down" ]; then
+    $DOCKER_COMPOSE_CMD down
+elif [ "$COMMAND" = "restart" ]; then
+    set +e
+    $LIVE_CMD down
+    set -e
+    $LIVE_CMD up
+else
+    if [ -n "$COMMAND" ]; then
+        echo "ERROR: \`$COMMAND\` is invalid option."
+        echo
+    fi
+    echo "┌─────────────────────────────────────┐"
+    echo "│ Available options:                  │"
+    echo "│ - up                                │"
+    echo "│ - down                              │"
+    echo "│ - restart                           │"
+    echo "└─────────────────────────────────────┘"
+fi
