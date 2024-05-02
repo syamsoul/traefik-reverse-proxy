@@ -2,11 +2,14 @@ services:
   reverse-proxy:
     image: traefik:v2.11.2
     restart: always
-    command: --api.insecure=true --providers.docker
-    # command: --providers.docker
+    environment:
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      # - TRAEFIK_API_INSECURE=true
+      # - TRAEFIK_EXPERIMENTAL_PLUGINS_cloudflarewarp_MODULENAME=github.com/BetterCorp/cloudflarewarp
+      # - TRAEFIK_EXPERIMENTAL_PLUGINS_cloudflarewarp_VERSION=v1.3.3
     ports:
       - "80:80"
-      - "8080:8080"
+      # - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
