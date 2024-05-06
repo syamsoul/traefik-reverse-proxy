@@ -25,8 +25,6 @@ services:
       - './.env:/var/www/html/.env'
       - './storage/logs:/var/www/html/storage/logs'
       - './storage/clockwork:/var/www/html/storage/clockwork'
-      - './storage/framework:/var/www/html/storage/framework'
-      - './bootstrap/cache:/var/www/html/bootstrap/cache'
     networks:
       - reverse-proxy-net
       - main-net
