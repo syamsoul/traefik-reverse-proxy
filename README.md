@@ -14,9 +14,11 @@ services:
     expose:
       - 8080
     labels:
-      - traefik.http.routers.myproj-my-service-${APP_ENV:-local}.rule=Host(`${APP_DOMAIN}`)
-      - traefik.http.services.myproj-my-service-${APP_ENV:-local}-service.loadbalancer.server.port=8080
+      - traefik.http.routers.${APP_ENV:-local}-myproj-myservice.rule=Host(`${APP_DOMAIN}`)
+      - traefik.http.services.${APP_ENV:-local}-myproj-myservice-service.loadbalancer.server.port=8080
       - traefik.docker.network=${APP_ENV:-local}-reverse-proxy-net
+      # - traefik.http.routers.${APP_ENV:-local}-myproj-myservice.middlewares=${TRAEFIK_MIDDLEWARES:-}
+      # - traefik.http.middlewares.cloudflarewarp.plugin.cloudflarewarp.disableDefault=${TRAEFIK_CLOUDFLAREWARP_DISABLE:-true}
     # ports:
     #   - '${APP_PORT:-80}:8080'
     volumes:
@@ -37,7 +39,7 @@ services:
     expose:
       - 6379
     volumes:
-      - '/var/redis/${APP_ENV:-local}/data:/data'
+      - '/var/docker-data/redis/${APP_ENV:-local}-myproj/data:/data'
     networks:
       - main-net
     healthcheck:
