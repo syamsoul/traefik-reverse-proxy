@@ -11,7 +11,7 @@ fi
 
 DOCKER_COMPOSE_CMD="sudo docker compose"
 
-BASH_CMD="sh ./live-proxy"
+BASH_CMD="./live-proxy"
 
 if [ "$COMMAND" = "up" ]; then
     $DOCKER_COMPOSE_CMD up -d
