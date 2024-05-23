@@ -5,11 +5,13 @@ set -e
 pushd ${0%/*}
 
 COMMAND=$1
-shift
+if [ $# -gt 0 ]; then
+    shift
+fi
 
 DOCKER_COMPOSE_CMD="sudo docker compose"
 
-LIVE_CMD="./live-proxy"
+BASH_CMD="sh ./live-proxy"
 
 if [ "$COMMAND" = "up" ]; then
     $DOCKER_COMPOSE_CMD up -d
@@ -17,9 +19,9 @@ elif [ "$COMMAND" = "down" ]; then
     $DOCKER_COMPOSE_CMD down
 elif [ "$COMMAND" = "restart" ]; then
     set +e
-    $LIVE_CMD down
+    $BASH_CMD down
     set -e
-    $LIVE_CMD up
+    $BASH_CMD up
 else
     if [ -n "$COMMAND" ]; then
         echo "ERROR: \`$COMMAND\` is invalid option."

@@ -7,7 +7,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/prod/Dockerfile
-    image: my-company/myproj-my-service-${APP_ENV:-local}
+    image: my-company/myproj-my-service:${APP_ENV:-local}
     environment:
       - PHP_OPCACHE_ENABLE=1
     restart: always
