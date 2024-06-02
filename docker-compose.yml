@@ -4,6 +4,7 @@ services:
     restart: always
     environment:
       - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
       # - TRAEFIK_API_INSECURE=true
       # - TRAEFIK_EXPERIMENTAL_PLUGINS_cloudflarewarp_MODULENAME=github.com/BetterCorp/cloudflarewarp
       # - TRAEFIK_EXPERIMENTAL_PLUGINS_cloudflarewarp_VERSION=v1.3.3

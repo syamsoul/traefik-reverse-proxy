@@ -14,6 +14,7 @@ services:
     expose:
       - 8080
     labels:
+      - traefik.enable=true
       - traefik.http.routers.${APP_ENV:-local}-myproj-myservice.rule=Host(`${APP_DOMAIN}`)
       - traefik.http.services.${APP_ENV:-local}-myproj-myservice-service.loadbalancer.server.port=8080
       - traefik.docker.network=${APP_ENV:-local}-reverse-proxy-net
