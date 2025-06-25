@@ -15,13 +15,13 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --certificatesresolvers.letsencrypt.acme.email=my-email@example.com
-      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.letsencrypt.acme.storage=/etc/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
       # - --experimental.plugins.cloudflarewarp.moduleName=github.com/BetterCorp/cloudflarewarp
       # - --experimental.plugins.cloudflarewarp.version=v1.3.3
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - traefik-certificates:/letsencrypt
+      - letsencrypt-certificates:/etc/letsencrypt
     healthcheck:
       test:
         - CMD
