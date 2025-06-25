@@ -1,46 +1,35 @@
-####Example of Docker Compose Services
+#### Creating Required Networks
 
+Before running the services, you need to create the necessary Docker networks. For the reverse proxy setup, create an overlay network using the following command:
+
+```bash
+docker network create --driver overlay reverse-proxy-net
+```
+
+#### Deploying the Reverse Proxy Service
+
+To start or update the reverse proxy service, run this command:
+
+```bash
+docker stack deploy -c ./docker-stack.yml reverse-proxy
+```
+
+#### Shutting Down the Reverse Proxy Service
+
+To shutdown the reverse proxy service, run this command:
+
+```bash
+docker stack rm reverse-proxy
+```
+
+#### Example of Docker Compose Services
 
 ```yaml
 services:
-  my-service:
-    build:
-      context: .
-      dockerfile: ./docker/prod/Dockerfile
-    image: my-company/myproj-my-service:${APP_ENV:-local}
-    environment:
-      - PHP_OPCACHE_ENABLE=1
-    restart: always
-    expose:
-      - 8080
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.${APP_ENV:-local}-myproj-myservice.rule=Host(`${APP_DOMAIN}`)
-      - traefik.http.services.${APP_ENV:-local}-myproj-myservice-service.loadbalancer.server.port=8080
-      - traefik.docker.network=${APP_ENV:-local}-reverse-proxy-net
-      # - traefik.http.routers.${APP_ENV:-local}-myproj-myservice.middlewares=${TRAEFIK_MIDDLEWARES:-}
-      # - traefik.http.middlewares.cloudflarewarp.plugin.cloudflarewarp.disableDefault=${TRAEFIK_CLOUDFLAREWARP_DISABLE:-true}
-    # ports:
-    #   - '${APP_PORT:-80}:8080'
-    volumes:
-      - './.env:/var/www/html/.env'
-      - './storage/logs:/var/www/html/storage/logs'
-      - './storage/clockwork:/var/www/html/storage/clockwork'
-    networks:
-      - reverse-proxy-net
-      - main-net
-    depends_on:
-      # - mysql
-      - redis
   redis:
-    image: 'redis:alpine'
-    restart: always
-    expose:
-      - 6379
+    image: redis:alpine
     volumes:
-      - '/var/docker-data/redis/${APP_ENV:-local}-myproj/data:/data'
-    networks:
-      - main-net
+      - redis-data:/data
     healthcheck:
       test:
         - CMD
@@ -48,11 +37,33 @@ services:
         - ping
       retries: 3
       timeout: 5s
+    networks:
+      - main-net
+
+  my-service:
+    image: ${IMAGE_NAME}:${LATEST_IMAGE_TAG}
+    environment:
+      - PHP_OPCACHE_ENABLE=1
+    networks:
+      - main-net
+      - reverse-proxy-net
+    volumes:
+      - 'shared-lock:/var/www/html/.shared-lock'
+      - './storage/logs:/var/www/html/storage/logs'
+      - './storage/clockwork:/var/www/html/storage/clockwork'
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.main.rule=Host(`${APP_DOMAIN}`)
+        - traefik.http.routers.main.entrypoints=web
+        - traefik.http.services.main-service.loadbalancer.server.port=8080
+        - traefik.docker.network=reverse-proxy-net
+        # - traefik.http.routers.main-service.middlewares=${TRAEFIK_MIDDLEWARES:-}
+        # - traefik.http.middlewares.cloudflarewarp.plugin.cloudflarewarp.disableDefault=${TRAEFIK_CLOUDFLAREWARP_DISABLE:-true}
+
 networks:
-  reverse-proxy-net:
-    name: "${APP_ENV:-local}-reverse-proxy-net"
-    external: true
   main-net:
-    name: "${APP_ENV:-local}-myproj-main-net"
-    driver: bridge
-```
+  reverse-proxy-net:
+    name: "reverse-proxy-net"
+    external: true

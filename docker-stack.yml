@@ -1,0 +1,50 @@
+services:
+  traefik:
+    image: traefik:v3
+    ports:
+      - 80:80
+      - 443:443
+      # - 8080:8080
+    command:
+      - --providers.swarm=true
+      - --providers.swarm.exposedbydefault=false
+      # - --api.insecure=true
+      - --entrypoints.web.address=:80
+      # - --entrypoints.websecure.address=:443
+      - --ping=true
+      # - --experimental.plugins.cloudflarewarp.moduleName=github.com/BetterCorp/cloudflarewarp
+      # - --experimental.plugins.cloudflarewarp.version=v1.3.3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test:
+        - CMD
+        - traefik
+        - healthcheck
+        - --ping
+      retries: 3
+      timeout: 5s
+    networks:
+      - reverse-proxy-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+  # redirect:
+  #   image: morbz/docker-web-redirect
+  #   restart: always
+  #   expose:
+  #     - 80
+  #   labels:
+  #     - traefik.http.routers.main-redirect.rule=Host(`10.10.10.1`)
+  #     - traefik.http.services.main-redirect-service.loadbalancer.server.port=80
+  #     - traefik.docker.network=reverse-proxy-net
+  #   environment:
+  #     - REDIRECT_TARGET=mydomain.com
+  #   networks:
+  #     - reverse-proxy-net
+
+networks:
+  reverse-proxy-net:
+    name: "reverse-proxy-net"
+    external: true
